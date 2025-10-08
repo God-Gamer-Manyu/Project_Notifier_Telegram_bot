@@ -30,16 +30,16 @@ class TelegramNotifier:
         # --- Configuration ---
         # It's best practice to get secrets like API tokens from environment variables
         # rather than hardcoding them in the script.
-        self.bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-        allowed_ids_str = os.getenv("TELEGRAM_ALLOWED_IDS")
+        self.bot_token = os.getenv("TELEGRAM_NOTIFIER_BOT_TOKEN")
+        allowed_ids_str = os.getenv("TELEGRAM_NOTIFIER_ALLOWED_IDS")
 
         if not self.bot_token:
-            logger.error("FATAL: TELEGRAM_BOT_TOKEN environment variable not set.")
-            raise ValueError("TELEGRAM_BOT_TOKEN is not configured.")
+            logger.error("FATAL: TELEGRAM_NOTIFIER_BOT_TOKEN environment variable not set.")
+            raise ValueError("TELEGRAM_NOTIFIER_BOT_TOKEN is not configured.")
 
         if not allowed_ids_str:
-            logger.error("FATAL: TELEGRAM_ALLOWED_IDS environment variable not set.")
-            raise ValueError("TELEGRAM_ALLOWED_IDS is not configured.")
+            logger.error("FATAL: TELEGRAM_NOTIFIER_ALLOWED_IDS environment variable not set.")
+            raise ValueError("TELEGRAM_NOTIFIER_ALLOWED_IDS is not configured.")
 
         # --- Process Allowed Chat IDs ---
         # The environment variable should be a comma-separated string of numbers.
@@ -61,7 +61,7 @@ class TelegramNotifier:
     async def notify(self, message: str, level: int = 1):
         """
         Sends a message to all subscribed and allowed users.
-        
+
         # Example usage when imported in another file:
         # from notifier_pkg.notifier import TelegramNotifier
         # import asyncio

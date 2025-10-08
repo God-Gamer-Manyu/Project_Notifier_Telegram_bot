@@ -40,9 +40,9 @@ This package reads the bot token and the list of allowed user IDs from environme
 Open your terminal and run these commands, replacing the placeholder values with your actual token and ID(s).
 
 ```shell
-export TELEGRAM_BOT_TOKEN="12345:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+export TELEGRAM_NOTIFIER_BOT_TOKEN="12345:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
 # For multiple users, separate their IDs with a comma
-export TELEGRAM_ALLOWED_IDS="123456789,987654321"
+export TELEGRAM_NOTIFIER_ALLOWED_IDS="123456789,987654321"
 ```
 
 To make these permanent, add them to your `~/.bashrc`, `~/.zshrc`, or `~/.profile` file.
@@ -51,8 +51,8 @@ To make these permanent, add them to your `~/.bashrc`, `~/.zshrc`, or `~/.profil
 Open Command Prompt and run these commands:
 
 ```shell
-set TELEGRAM_BOT_TOKEN="12345:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-set TELEGRAM_ALLOWED_IDS="123456789,987654321"
+set TELEGRAM_NOTIFIER_BOT_TOKEN="12345:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+set TELEGRAM_NOTIFIER_ALLOWED_IDS="123456789,987654321"
 ```
 
 To set them permanently, search for "Edit the system environment variables" in the Start Menu.
