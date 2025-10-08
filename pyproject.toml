@@ -1,0 +1,8 @@
+# File: pyproject.toml
+
+# This file tells Python's packaging tools (like pip) what build system to use.
+# For this project, we're using setuptools, which is the standard.
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
