@@ -41,7 +41,21 @@ This is perfect for monitoring long-running tasks, such as machine learning trai
 
 4. **BotFather will give you an HTTP API token. Copy this token and save it** securely. This is your `TELEGRAM_BOT_TOKEN`.
 
-## b. Get Your Chat ID
+## b. Configure a Destination (Channel or User)
+You can send notifications to a channel (recommended) or directly to users.
+
+### Option 1: Using a Telegram Channel (Recommended)
+1. **Create a Channel**: In Telegram, create a new Public or Private channel.
+
+2. **Add Bot as Admin:** Go to your Channel Info -> Administrators -> Add Admin. Search for your bot's username and add it. It only needs the Post Messages permission. This step is mandatory.
+
+3. **Get the Channel ID:**
+
+    - For a Public Channel: The ID is its username (e.g., `@my_awesome_channel`).
+
+    - For a Private Channel: Post a message in the channel, forward it to `@userinfobot`, and find the `id` in the `forward_from_chat` section of the reply. It will be a long negative number (e.g., `-1001234567890`).
+
+### Option 2: Get Your Chat ID
 The bot needs to know who to send messages to. Each user has a unique Chat ID.
 
 1. Search for the bot **@userinfobot** in Telegram.
@@ -58,8 +72,8 @@ Open your terminal and run these commands, replacing the placeholder values with
 
 ```shell
 export TELEGRAM_NOTIFIER_BOT_TOKEN="12345:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-# For multiple users, separate their IDs with a comma
-export TELEGRAM_NOTIFIER_ALLOWED_IDS="123456789,987654321"
+# You can mix and match channel and multiple user IDs, separated by commas
+export TELEGRAM_NOTIFIER_ALLOWED_IDS="@my_public_channel,-1001234567890,987654321"
 ```
 
 To make these permanent, add them to your `~/.bashrc`, `~/.zshrc`, or `~/.profile` file.
@@ -69,7 +83,7 @@ Open Command Prompt and run these commands:
 
 ```shell
 set TELEGRAM_NOTIFIER_BOT_TOKEN="12345:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-set TELEGRAM_NOTIFIER_ALLOWED_IDS="123456789,987654321"
+set TELEGRAM_NOTIFIER_ALLOWED_IDS="@my_public_channel,-1001234567890,987654321"
 ```
 
 To set them permanently, search for "Edit the system environment variables" in the Start Menu.
@@ -93,36 +107,12 @@ import asyncio
 from notifier_pkg import TelegramNotifier
 
 async def my_long_running_task():
-    print("Starting a complex task...")
-    
-    # Initialize the notifier
     notifier = TelegramNotifier()
-
-    # --- Your code here ---
-    # Simulate some work
-    await asyncio.sleep(5) 
-    
-    # Send a notification when the task is done
-    await notifier.notify(
-        "Data processing is complete.\nProcessed 1.5M records.",
-        level=1  # Info
-    )
-
-    # --- Simulate another task that fails ---
-    try:
-        print("Starting a task that might fail...")
-        await asyncio.sleep(2)
-        # Force an error for demonstration
-        result = 10 / 0
-    except Exception as e:
-        # Send an error notification
-        await notifier.notify(
-            f"An error occurred in the task!\n\n*Details:*\n`{str(e)}`",
-            level=3  # Error
-        )
+    await notifier.notify("The simulation has started.", level=1)
+    # ... your code ...
+    await notifier.notify("The task is complete!", level=1)
 
 if __name__ == "__main__":
-    # Since the notifier is async, you need an async entry point.
     asyncio.run(my_long_running_task())
 ```
 

@@ -3,7 +3,7 @@
 import os
 import asyncio
 import logging
-from typing import List
+from typing import List, Union
 
 # We will use the python-telegram-bot library, which is a popular choice.
 # It will be installed automatically via the setup.cfg file.
@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 class TelegramNotifier:
     """
     A class to handle sending notifications to a pre-defined list of
-    Telegram users.
+    Telegram users or channels.
 
-    Reads the bot token and allowed chat IDs from environment variables.
+    Reads the bot token and allowed chat/channel IDs from environment variables.
     """
     def __init__(self):
         """
@@ -27,9 +27,6 @@ class TelegramNotifier:
         """
         logger.info("Initializing TelegramNotifier...")
         
-        # --- Configuration ---
-        # It's best practice to get secrets like API tokens from environment variables
-        # rather than hardcoding them in the script.
         self.bot_token = os.getenv("TELEGRAM_NOTIFIER_BOT_TOKEN")
         allowed_ids_str = os.getenv("TELEGRAM_NOTIFIER_ALLOWED_IDS")
 
@@ -41,36 +38,33 @@ class TelegramNotifier:
             logger.error("FATAL: TELEGRAM_NOTIFIER_ALLOWED_IDS environment variable not set.")
             raise ValueError("TELEGRAM_NOTIFIER_ALLOWED_IDS is not configured.")
 
-        # --- Process Allowed Chat IDs ---
-        # The environment variable should be a comma-separated string of numbers.
-        # e.g., "12345678,87654321"
+        # --- Process Allowed Chat and Channel IDs ---
+        # The environment variable should be a comma-separated string.
+        # e.g., "@my_public_channel,-100123456789,12345678"
         try:
-            self.allowed_chat_ids: List[int] = [int(chat_id.strip()) for chat_id in allowed_ids_str.split(',')]
+            # --- MODIFICATION ---
+            # This logic now handles usernames (@channel), private channel IDs (-100...), and user IDs (123...)
+            raw_ids = [chat_id.strip() for chat_id in allowed_ids_str.split(',')]
+            self.allowed_chat_ids: List[Union[str, int]] = []
+            for chat_id in raw_ids:
+                if chat_id.startswith('@') or chat_id.startswith('-'):
+                    self.allowed_chat_ids.append(chat_id) # Keep as string for channels
+                else:
+                    self.allowed_chat_ids.append(int(chat_id)) # Convert to int for users
+            
             if not self.allowed_chat_ids:
                 raise ValueError
-            logger.info(f"Notifier configured for {len(self.allowed_chat_ids)} user(s).")
+            logger.info(f"Notifier configured for {len(self.allowed_chat_ids)} channel(s)/user(s).")
         except (ValueError, AttributeError):
-            logger.error(f"FATAL: TELEGRAM_ALLOWED_IDS is not a valid comma-separated list of numbers: '{allowed_ids_str}'")
+            logger.error(f"FATAL: TELEGRAM_ALLOWED_IDS is not a valid comma-separated list of IDs: '{allowed_ids_str}'")
             raise ValueError("Invalid format for TELEGRAM_ALLOWED_IDS.")
 
-        # --- Initialize the Bot ---
-        # The modern python-telegram-bot library is asynchronous.
         self.bot = telegram.Bot(token=self.bot_token)
         logger.info("Telegram Bot initialized successfully.")
 
     async def notify(self, message: str, level: int = 1):
         """
-        Sends a message to all subscribed and allowed users.
-
-        # Example usage when imported in another file:
-        # from notifier_pkg.notifier import TelegramNotifier
-        # import asyncio
-        #
-        # async def send_notification():
-        #     notifier = TelegramNotifier()
-        #     await notifier.notify("Hello from another module!", level=1)
-        #
-        # asyncio.run(send_notification())
+        Sends a message to all subscribed and allowed users/channels.
 
         Args:
             message (str): The core message text to send.
@@ -83,8 +77,6 @@ class TelegramNotifier:
             logger.warning(f"Invalid notification level '{level}'. Defaulting to 1 (Info).")
             level = 1
 
-        # --- Format Message based on Level ---
-        # Emojis help messages stand out in the chat.
         prefix = ""
         if level == 1:
             prefix = "ℹ️ [INFO]"
@@ -95,60 +87,39 @@ class TelegramNotifier:
             
         full_message = f"{prefix}\n\n{message}"
         
-        logger.info(f"Sending notification (Level {level}) to {len(self.allowed_chat_ids)} users.")
+        logger.info(f"Sending notification (Level {level}) to {len(self.allowed_chat_ids)} destination(s).")
 
-        # --- Send to all users concurrently ---
-        # Create a list of tasks to run them in parallel.
         tasks = [
             self._send_single_message(chat_id, full_message) 
             for chat_id in self.allowed_chat_ids
         ]
-        # asyncio.gather runs all tasks and waits for them to complete.
         await asyncio.gather(*tasks)
         logger.info("All notifications sent.")
 
-    async def _send_single_message(self, chat_id: int, text: str):
+    async def _send_single_message(self, chat_id: Union[str, int], text: str):
         """
         A helper function to send a message to a single chat ID with error handling.
+        This function requires no changes, as the library handles both string and int IDs.
         """
         try:
             await self.bot.send_message(chat_id=chat_id, text=text, parse_mode='Markdown')
             logger.info(f"Successfully sent message to chat_id: {chat_id}")
         except TelegramError as e:
-            # This can happen if the user has blocked the bot or the chat_id is wrong.
             logger.error(f"Failed to send message to chat_id {chat_id}: {e}")
         except Exception as e:
             logger.error(f"An unexpected error occurred while sending to {chat_id}: {e}")
 
+# The main function for testing remains the same.
 async def main():
-    """
-    An example of how to use the TelegramNotifier class.
-    This function will only run if you execute this script directly.
-    """
     print("--- Running Notifier Example ---")
     try:
         notifier = TelegramNotifier()
-        
-        # Example notifications
-        await notifier.notify(
-            "The simulation has completed successfully.\nFinal score: *98.7%*",
-            level=1
-        )
-        await notifier.notify(
-            "Disk space is running low on the server.\nUsage: *91%*",
-            level=2
-        )
-        await notifier.notify(
-            "A critical error occurred in the data processing module.\n`Process failed with exit code 1.`",
-            level=3
-        )
-        
+        await notifier.notify("This is a test notification to the configured channels and users.", level=1)
     except ValueError as e:
         print(f"Configuration Error: {e}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
-    # To run this example, make sure you have set the environment variables first.
-    # Then run `python -m src.notifier_pkg.notifier` from the root directory.
     asyncio.run(main())
+
