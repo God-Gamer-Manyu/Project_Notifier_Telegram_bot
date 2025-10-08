@@ -61,6 +61,16 @@ class TelegramNotifier:
     async def notify(self, message: str, level: int = 1):
         """
         Sends a message to all subscribed and allowed users.
+        
+        # Example usage when imported in another file:
+        # from notifier_pkg.notifier import TelegramNotifier
+        # import asyncio
+        #
+        # async def send_notification():
+        #     notifier = TelegramNotifier()
+        #     await notifier.notify("Hello from another module!", level=1)
+        #
+        # asyncio.run(send_notification())
 
         Args:
             message (str): The core message text to send.
