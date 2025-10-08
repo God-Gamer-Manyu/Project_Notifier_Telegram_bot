@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+setup.cfg
+src/notifier_pkg/__init__.py
+src/notifier_pkg/notifier.py
+src/telegram_notifier_pkg.egg-info/PKG-INFO
+src/telegram_notifier_pkg.egg-info/SOURCES.txt
+src/telegram_notifier_pkg.egg-info/dependency_links.txt
+src/telegram_notifier_pkg.egg-info/requires.txt
+src/telegram_notifier_pkg.egg-info/top_level.txt
