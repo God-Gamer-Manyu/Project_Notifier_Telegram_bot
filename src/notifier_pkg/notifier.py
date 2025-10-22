@@ -1,5 +1,12 @@
 # File: src/notifier_pkg/notifier.py
 
+"""
+To build and release
+# create an annotated tag and push it to origin
+git tag -a v<version => *.*.*> -m "Release v<version>"
+git push origin v<version>
+"""
+
 import os
 import asyncio
 import logging

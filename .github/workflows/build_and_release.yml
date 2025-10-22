@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*.*.*'
 
+# Give the GITHUB_TOKEN the permissions it needs to create releases and upload assets.
+permissions:
+  contents: write
+
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
@@ -12,6 +16,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # ensure tags and full history are available for the release action
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
