@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: telegram-notifier-pkg
-Version: 0.1.0
+Version: 1.0.0
 Summary: A simple package to send Telegram notifications from Python projects.
 Home-page: https://github.com/God-Gamer-Manyu/Project_Notifier_Telegram_bot
 Author: attr: notifier_pkg.__author__

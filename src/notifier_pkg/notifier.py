@@ -20,6 +20,30 @@ class TelegramNotifier:
     Telegram users or channels.
 
     Reads the bot token and allowed chat/channel IDs from environment variables.
+
+    Examples:
+        Basic usage (from an async context and running inside a synchronous event loop (e.g., Jupyter notebooks)):
+
+        >>> from notifier_pkg import TelegramNotifier
+    >>> import nest_asyncio
+    >>> nest_asyncio.apply()
+    >>> notifier = TelegramNotifier()
+    >>> await notifier.notify("Deployment complete.", level=1)
+    >>> await notifier.notify("High memory usage detected on server X.", level=2) # Sending a Warning
+
+        Basic usage (from an async context and running inside a python file):
+
+        >>> from notifier_pkg import TelegramNotifier
+    >>> import asyncio
+    >>> async def main():
+    >>>     notifier = TelegramNotifier()
+    >>>     await notifier.notify("Deployment complete.", level=1)
+
+    Notes:
+        - The final message format is "<prefix>\\n\\n<message>" where prefix is one of:
+            "ℹ️ [INFO]", "⚠️ [WARNING]", "❌ [ERROR]".
+        - The function logs the number of destinations before sending and logs when all
+            notifications have been sent.
     """
     def __init__(self):
         """
@@ -64,14 +88,50 @@ class TelegramNotifier:
 
     async def notify(self, message: str, level: int = 1):
         """
-        Sends a message to all subscribed and allowed users/channels.
+        Send a formatted notification message to all subscribed and allowed chats.
+        This coroutine sends `message` to every chat ID listed in self.allowed_chat_ids.
+        The function validates the provided `level`, maps it to a short emoji-prefixed
+        status header, prepends that header to the message body, and dispatches the
+        messages concurrently using asyncio.gather.
+        
+        Params:
+            `message (str)`: The core text to send in the notification body.
+            `level (int, optional)`: Importance/risk level of the message. Supported values:
+               - 1 - Info (default)
+               - 2 - Warning
+               - 3 - Error
 
-        Args:
-            message (str): The core message text to send.
-            level (int): The risk/importance level of the message.
-                         1: Info (default)
-                         2: Warning
-                         3: Error
+               If an invalid value is provided, the function logs a warning and defaults to 1.
+
+        Returns:
+            None
+        Raises:
+            `Exception`: Any exception raised by the underlying send tasks (self._send_single_message)
+            will propagate from asyncio.gather. The first encountered exception is raised
+            to the caller.
+        Examples:
+            Basic usage (from an async context and running inside a synchronous event loop (e.g., Jupyter notebooks)):
+
+            >>> from notifier_pkg import TelegramNotifier
+        >>> import nest_asyncio
+        >>> nest_asyncio.apply()
+        >>> notifier = TelegramNotifier()
+        >>> await notifier.notify("Deployment complete.", level=1)
+        >>> await notifier.notify("High memory usage detected on server X.", level=2) # Sending a Warning
+
+            Basic usage (from an async context and running inside a python file):
+
+            >>> from notifier_pkg import TelegramNotifier
+        >>> import asyncio
+        >>> async def main():
+        >>>     notifier = TelegramNotifier()
+        >>>     await notifier.notify("Deployment complete.", level=1)
+
+        Notes:
+            - The final message format is "<prefix>\\n\\n<message>" where prefix is one of:
+              "ℹ️ [INFO]", "⚠️ [WARNING]", "❌ [ERROR]".
+            - The function logs the number of destinations before sending and logs when all
+              notifications have been sent.
         """
         if not isinstance(level, int) or level not in [1, 2, 3]:
             logger.warning(f"Invalid notification level '{level}'. Defaulting to 1 (Info).")
