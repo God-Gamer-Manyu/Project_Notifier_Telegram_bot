@@ -106,5 +106,31 @@ if __name__ == "__main__":
     asyncio.run(my_long_running_task())
 ```
 
+Simpler Usage
+
+```python
+from notifier_pkg import TelegramNotifier
+import asyncio
+
+# ... your code ...
+
+notifier = TelegramNotifier()
+asyncio.run(notifier.notify("Deployment complete.", level=1))
+```
+
+Simpler Usage in synchronous event loop (e.g., Jupyter notebooks)
+
+```python
+from notifier_pkg import TelegramNotifier
+import nest_asyncio
+
+nest_asyncio.apply()
+
+# ... your code ...
+
+notifier = TelegramNotifier()
+await notifier.notify("Deployment complete.", level=1)
+```
+
 
 Now, whenever you run `your_project_script.py`, it will send notifications to the users you configured!
