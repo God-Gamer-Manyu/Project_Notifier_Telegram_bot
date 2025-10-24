@@ -73,7 +73,7 @@ To set them permanently, search for "Edit the system environment variables" in t
 
 # 2. Installation
 ## Using the release package
-Download the `.wheel` file from the release section. In your project terminal,
+Download the `.wheel` file from the release section and install the package using pip:
 ```shell
 pip install "path to .wheel file"
 ```
