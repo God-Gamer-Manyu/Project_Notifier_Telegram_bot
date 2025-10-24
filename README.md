@@ -72,6 +72,13 @@ set TELEGRAM_NOTIFIER_ALLOWED_IDS="@my_public_channel,-1001234567890,987654321"
 To set them permanently, search for "Edit the system environment variables" in the Start Menu.
 
 # 2. Installation
+## Using the release package
+Download the `.wheel` file from the release section. In your project terminal,
+```shell
+pip install "path to .wheel file"
+```
+
+## using the source code
 Once you have placed all the files in a directory, navigate to that directory in your terminal and install the package locally using pip:
 
 ```shell
