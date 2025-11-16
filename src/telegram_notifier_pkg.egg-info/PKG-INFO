@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: telegram-notifier-pkg
-Version: 1.0.0
+Version: 1.0.1
 Summary: A simple package to send Telegram notifications from Python projects.
 Home-page: https://github.com/God-Gamer-Manyu/Project_Notifier_Telegram_bot
 Author: attr: notifier_pkg.__author__
@@ -89,6 +89,13 @@ set TELEGRAM_NOTIFIER_ALLOWED_IDS="@my_public_channel,-1001234567890,987654321"
 To set them permanently, search for "Edit the system environment variables" in the Start Menu.
 
 # 2. Installation
+## Using the release package
+Download the `.wheel` file from the release section and install the package using pip:
+```shell
+pip install "path to .wheel file"
+```
+
+## using the source code
 Once you have placed all the files in a directory, navigate to that directory in your terminal and install the package locally using pip:
 
 ```shell
@@ -114,6 +121,32 @@ async def my_long_running_task():
 
 if __name__ == "__main__":
     asyncio.run(my_long_running_task())
+```
+
+Simpler Usage
+
+```python
+from notifier_pkg import TelegramNotifier
+import asyncio
+
+# ... your code ...
+
+notifier = TelegramNotifier()
+asyncio.run(notifier.notify("Deployment complete.", level=1))
+```
+
+Simpler Usage in synchronous event loop (e.g., Jupyter notebooks)
+
+```python
+from notifier_pkg import TelegramNotifier
+import nest_asyncio
+
+nest_asyncio.apply()
+
+# ... your code ...
+
+notifier = TelegramNotifier()
+await notifier.notify("Deployment complete.", level=1)
 ```
 
 
