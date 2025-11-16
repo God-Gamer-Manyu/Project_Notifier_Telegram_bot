@@ -32,19 +32,19 @@ class TelegramNotifier:
         Basic usage (from an async context and running inside a synchronous event loop (e.g., Jupyter notebooks)):
 
         >>> from notifier_pkg import TelegramNotifier
+    >>> import asyncio
     >>> import nest_asyncio
     >>> nest_asyncio.apply()
     >>> notifier = TelegramNotifier()
-    >>> await notifier.notify("Deployment complete.", level=1)
-    >>> await notifier.notify("High memory usage detected on server X.", level=2) # Sending a Warning
+    >>> asyncio.run(notifier.notify("Deployment complete.", level=1))
+    >>> asyncio.run(notifier.notify("High memory usage detected on server X.", level=2)) # Sending a Warning
 
         Basic usage (from an async context and running inside a python file):
 
         >>> from notifier_pkg import TelegramNotifier
     >>> import asyncio
-    >>> async def main():
-    >>>     notifier = TelegramNotifier()
-    >>>     await notifier.notify("Deployment complete.", level=1)
+    >>> notifier = TelegramNotifier()
+    >>> asyncio.run(notifier.notify("Deployment complete.", level=1))
 
     Notes:
         - The final message format is "<prefix>\\n\\n<message>" where prefix is one of:
@@ -120,19 +120,19 @@ class TelegramNotifier:
             Basic usage (from an async context and running inside a synchronous event loop (e.g., Jupyter notebooks)):
 
             >>> from notifier_pkg import TelegramNotifier
+        >>> import asyncio
         >>> import nest_asyncio
         >>> nest_asyncio.apply()
         >>> notifier = TelegramNotifier()
-        >>> await notifier.notify("Deployment complete.", level=1)
-        >>> await notifier.notify("High memory usage detected on server X.", level=2) # Sending a Warning
+        >>> asyncio.run(notifier.notify("Deployment complete.", level=1))
+        >>> asyncio.run(notifier.notify("High memory usage detected on server X.", level=2)) # Sending a Warning
 
             Basic usage (from an async context and running inside a python file):
 
             >>> from notifier_pkg import TelegramNotifier
         >>> import asyncio
-        >>> async def main():
-        >>>     notifier = TelegramNotifier()
-        >>>     await notifier.notify("Deployment complete.", level=1)
+        >>> notifier = TelegramNotifier()
+        >>> asyncio.run(notifier.notify("Deployment complete.", level=1))
 
         Notes:
             - The final message format is "<prefix>\\n\\n<message>" where prefix is one of:
