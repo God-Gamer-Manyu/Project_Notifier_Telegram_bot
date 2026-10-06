@@ -134,3 +134,33 @@ await notifier.notify("Deployment complete.", level=1)
 
 
 Now, whenever you run `your_project_script.py`, it will send notifications to the users you configured!
+
+---
+
+# 4. Architecture & Concepts
+
+```
+Your Python project
+   │  await notifier.notify("msg", level=1|2|3)
+   ▼
+TelegramNotifier (src/notifier_pkg/notifier.py)
+   ├── reads TELEGRAM_NOTIFIER_BOT_TOKEN / TELEGRAM_NOTIFIER_ALLOWED_IDS from environment
+   ├── validates level → emoji-prefixed Info / Warning / Error message
+   └── fans out asynchronously to every allowed chat / channel ID
+   ▼
+Telegram Bot API (python-telegram-bot) ──► users & channels
+```
+
+- **Packaging:** `src/` layout, declarative `setup.cfg` + `pyproject.toml` (setuptools build backend), version and author exposed from `notifier_pkg/__init__.py`.
+- **CI/CD:** the GitHub Actions workflow `build_and_release.yml` runs on every `v*.*.*` tag. It builds the wheel and sdist and attaches them to a **GitHub Release** automatically.
+- **Security:** secrets come only from environment variables, and an allow-list of recipient IDs restricts who receives messages.
+
+**Concepts:** asynchronous programming (`asyncio`) · Telegram Bot API integration · Python packaging and distribution (wheel / sdist) · environment-based configuration · structured logging and error handling · CI/CD release automation with **GitHub Actions**
+
+# 5. Tech Stack
+
+`Python 3.8+` · `asyncio` · `python-telegram-bot` · `setuptools` · `GitHub Actions`
+
+# 👤 Author
+
+**Rtamanyu N J**, [@God-Gamer-Manyu](https://github.com/God-Gamer-Manyu)
